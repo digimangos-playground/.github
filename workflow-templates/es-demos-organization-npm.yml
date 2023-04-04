@@ -1,0 +1,29 @@
+name: JavaScript CI
+
+on:
+  push:
+    branches: [ $default-branch ]
+  pull_request:
+    branches: [ $default-branch ]
+
+jobs:
+  ci:
+    runs-on: [ self-hosted, es-demos ]
+
+    strategy:
+      matrix:
+        node: [ 14, 16, 18 ]
+
+    steps:
+      - uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3
+
+      - uses: actions/setup-node@41acaa2e85a9c20b0bcaff1397645d5f33cab6ac
+        with:
+          node-version: ${{ matrix.node }}
+          cache: 'npm'
+
+      - run: npm ci
+
+      - run: npm run test --if-present
+
+      - run: npm run build --if-present

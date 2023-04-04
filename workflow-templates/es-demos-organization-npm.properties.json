@@ -1,0 +1,7 @@
+{
+  "name": "es-demo JavaScript workflow",
+  "description": "es-demo JavaScript starter workflow.",
+  "iconName": "es-demos-organization-npm",
+  "categories": ["JavaScript"],
+  "filePatterns": ["package.json$"]
+}
