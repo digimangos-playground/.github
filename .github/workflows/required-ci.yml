@@ -17,4 +17,4 @@ jobs:
 
   ci:
     needs: [lint]
-    uses: es-demos/.github/.github/workflows/ci.yml@main
+    uses: digimangos-playground/.github/.github/workflows/ci.yml@main
