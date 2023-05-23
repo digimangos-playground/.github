@@ -1,0 +1,50 @@
+#################################################################
+# This workflow executes several linters on changed files based on languages used in your code base whenever
+# you push a code or open a pull request.
+#
+# You can adjust the behavior by modifying this file.
+# For more information, see:
+# https://github.com/github/super-linter
+#################################################################
+name: Lint Code Base
+
+on:
+  workflow_call:
+    inputs:
+      ##########
+      # validate-all-codebase: 
+      #   'true' means that the whole codebase will be scanned
+      #   'false' only the updates
+      #   optional input
+      #   default value is 'false'
+      ##########
+      validate-all-codebase:
+        type: boolean
+        required: false
+        default: false
+
+jobs:
+  run-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Show context variables
+        run: |
+          echo "repository : ${{ github.repository }}"
+          echo "default branch ${GITHUB_REF##*/}"
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          ##########
+          # Full git history is needed to get a proper list of changed files within `super-linter`
+          ##########
+          repository: ${{ github.repository }}
+          fetch-depth: 0
+
+      - name: Lint Code Base
+        uses: github/super-linter/slim@v5
+        env:
+          VALIDATE_ALL_CODEBASE: ${{ inputs.validate-all-codebase }}
+          IGNORE_GENERATED_FILES: true
+          IGNORE_GITIGNORED_FILES: true
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEFAULT_BRANCH: ${GITHUB_REF##*/}
