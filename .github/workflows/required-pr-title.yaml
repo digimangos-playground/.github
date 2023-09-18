@@ -1,0 +1,33 @@
+name: Verify PR Title contains AB#xxx
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - edited
+
+jobs:
+  verify_pr_title:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Verify PR Title
+        run: |
+          # Pattern to check for AB#xxx in title
+          PATTERN="AB#[0-9]+"
+          
+          # Get the PR title
+          PR_TITLE=$(jq -r .pull_request.title "$GITHUB_EVENT_PATH")
+
+          # Check if the PR title matches the pattern
+          if [[ "$PR_TITLE" =~ $PATTERN ]]; then
+            echo "PR title is valid: $PR_TITLE"
+          else
+            echo "PR title is invalid: $PR_TITLE"
+            echo "PR title should match the pattern 'AB#xxxx' where 'x' is a numeric value."
+            exit 1
+          fi
