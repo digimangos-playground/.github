@@ -4,9 +4,8 @@ on:
   pull_request:
     types:
       - opened
-      - synchronize
       - edited
-      - re-opened
+      - reopened
 
 jobs:
   verify_pr_title:
