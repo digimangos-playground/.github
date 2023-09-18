@@ -2,7 +2,6 @@ name: Verify PR Title contains AB#xxx
 
 on:
   pull_request:
-    types:
 
 jobs:
   verify_pr_title:
