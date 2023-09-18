@@ -3,9 +3,6 @@ name: Verify PR Title contains AB#xxx
 on:
   pull_request:
     types:
-      - opened
-      - synchronize
-      - edited
 
 jobs:
   verify_pr_title:
