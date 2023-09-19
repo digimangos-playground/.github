@@ -4,9 +4,13 @@ on:
   pull_request:
     types:
       - opened
-      - synchronize
-      - edited
       - reopened
+
+permissions:
+  pull-requests: write
+
+env:
+  api-base: "https://api.github.com"
 
 jobs:
   verify_pr_title:
@@ -17,6 +21,8 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Verify PR Title
+        env:
+          API_BASE: ${{ env.api-base }}
         run: |
           # Pattern to check for AB#xxx in title
           PATTERN="AB#[0-9]+"
@@ -30,5 +36,27 @@ jobs:
           else
             echo "PR title is invalid: $PR_TITLE"
             echo "PR title should match the pattern 'AB#xxxx' where 'x' is a numeric value."
+
+            # Close the PR using the GitHub API
+            PR_NUMBER=$(jq -r .pull_request.number "$GITHUB_EVENT_PATH")
+            REPO_OWNER=$(jq -r .repository.owner.login "$GITHUB_EVENT_PATH")
+            REPO_NAME=$(jq -r .repository.name "$GITHUB_EVENT_PATH")
+
+            # Create a comment explaining why the PR is being closed
+            COMMENT="⚠ Closing this PR because the title does not contain a reference to Azure Boards 'AB#xxxx'. Please correct the title and reopen the PR."
+
+            # Comment on the PR
+            curl -X POST \
+              -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              -d "{\"body\": \"$COMMENT\"}" \
+              "${API_BASE}/repos/${REPO_OWNER}/${REPO_NAME}/issues/${PR_NUMBER}/comments"
+
+            # Use the GitHub API to close the PR
+            curl -X POST \
+              -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              -d "{\"state\": \"closed\"}" \
+              "${API_BASE}/repos/${REPO_OWNER}/${REPO_NAME}/issues/${PR_NUMBER}"
+
+            # Exit with a non-zero status code to indicate the failure
             exit 1
           fi
