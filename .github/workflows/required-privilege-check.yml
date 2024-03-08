@@ -33,9 +33,7 @@ jobs:
           fi
 
           # Search for YAML or YML files
-          echo "PRE-FIND"
           yaml_files=$(find "$directory" -type f -iregex '.*\.\(yaml\|yml\)$')
-          echo "POST-FIND"
 
           # Check if there are YAML or YML files
           if [ -z "$yaml_files" ]; then
@@ -45,6 +43,7 @@ jobs:
 
           # Search for the pattern in YAML or YML files
           echo "PRE MATCHES"
+          grep -r -E 'options:(?:.*?--privileged\b)' $yaml_files
           matches=$(grep -r -E 'options:(?:.*?--privileged\b)' $yaml_files 2>/dev/null)
           echo "POST MATCHES"
 
