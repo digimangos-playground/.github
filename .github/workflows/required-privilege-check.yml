@@ -1,0 +1,51 @@
+name: Check privileged option
+
+on:
+  pull_request:
+    paths: '.github/workflows/*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  check-privileged:
+    runs-on: [ubuntu-latest]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: .github/workflows
+          
+      - name: Execute check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OWNER_REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.number }}
+        run: |
+          # Limit search directory
+          directory=".github/workflows"
+          
+          # Search for the pattern in YAML files
+          grep -r -E 'options:(?:.*?--privileged\b)' "$directory"/*.yml "$directory"/*.yaml
+          
+          # Check the exit code of grep
+          if [ $? -eq 0 ]; then
+              # Pattern matched
+              # Set up your GitHub API details
+          
+              # Create a comment to add to the pull request
+              COMMENT="The pattern '--privileged' was found in one or more YAML files."
+          
+              # Post the comment to the pull request using the GitHub API
+              curl -X POST \
+              -H "Authorization: token ${GH_TOKEN}" \
+              -H "Content-Type: application/json" \
+              -d "{\"body\": \"$COMMENT\"}" \
+              "https://api.github.com/repos/${OWNER_REPO}/issues/${PR_NUMBER}/comments"
+
+          else
+              # Pattern not matched
+              exit 0
+          fi
