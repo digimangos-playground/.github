@@ -27,17 +27,32 @@ jobs:
           # Limit search directory
           directory=".github/workflows"
           
-          # Search for the pattern in YAML files
-          grep -r -E 'options:(?:.*?--privileged\b)' "$directory"/*.yml "$directory"/*.yaml
+          if [ ! -d "$directory" ]; then
+            echo "Directory $directory does not exist."
+            exit 0
+          fi
+
+          # Search for YAML or YML files
+          yaml_files=$(find "$directory" -type f \( -iname "*.yaml" -o -iname "*.yml" \))
           
+          # Check if there are YAML or YML files
+          if [ -z "$yaml_files" ]; then
+              echo "No YAML or YML files found in $directory."
+              exit 0
+          fi
+          
+          # Search for the pattern in YAML or YML files
+          matches=$(grep -r -E 'options:(?:.*?--privileged\b)' $yaml_files 2>/dev/null)
+
+
           # Check the exit code of grep
-          if [ $? -eq 0 ]; then
+          if [ -n "$matches" ]; then
               # Pattern matched
               # Set up your GitHub API details
           
               # Create a comment to add to the pull request
-              COMMENT="The pattern '--privileged' was found in one or more YAML files."
-          
+              COMMENT="🛑 The pull request contains workflows files using `--privileged` option which is not permitted."
+
               # Post the comment to the pull request using the GitHub API
               curl -X POST \
               -H "Authorization: token ${GH_TOKEN}" \
@@ -47,5 +62,6 @@ jobs:
 
           else
               # Pattern not matched
+              echo "No matches found."
               exit 0
           fi
