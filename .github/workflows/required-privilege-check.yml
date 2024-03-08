@@ -24,18 +24,8 @@ jobs:
           OWNER_REPO: ${{ github.repository }}
           PR_NUMBER: ${{ github.event.number }}
         run: |
-          # Limit search directory
-          directory=".github/workflows"
-          
-          if [ ! -d "$directory" ]; then
-            echo "Directory $directory does not exist."
-            exit 0
-          fi
-
           # Search for the pattern in YAML or YML files
-          echo "PRE MATCHES"
-          matches=$(grep -r -E 'options:(?:.*?--privileged\b)' ".github/workflows/*.*" 2>/dev/null)
-          echo "POST MATCHES"
+          matches=$(grep -r -E 'options:(?:.*?--privileged\b)' --include=*.{yml,yaml} 2>/dev/null)
 
           # Check the exit code of grep
           if [ -n "$matches" ]; then
@@ -50,7 +40,6 @@ jobs:
               -H "Content-Type: application/json" \
               -d "{\"body\": \"$COMMENT\"}" \
               "https://api.github.com/repos/${OWNER_REPO}/issues/${PR_NUMBER}/comments"
-
           else
               # Pattern not matched
               echo "No matches found."
