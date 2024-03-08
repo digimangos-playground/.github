@@ -3,7 +3,7 @@ name: Check privileged option
 on:
   pull_request:
     paths: '.github/workflows/*'
-  workflow_dispatch:
+  push:
 
 permissions:
   contents: read
@@ -33,17 +33,16 @@ jobs:
           fi
 
           # Search for YAML or YML files
-          yaml_files=$(find "$directory" -type f \( -iname "*.yaml" -o -iname "*.yml" \))
-          
+          yaml_files=$(find "$directory" -type f -iregex '.*\.\(yaml\|yml\)$')
+
           # Check if there are YAML or YML files
           if [ -z "$yaml_files" ]; then
-              echo "No YAML or YML files found in $directory."
-              exit 0
+            echo "No yaml or yml files found in $directory."
+            exit 0
           fi
-          
+
           # Search for the pattern in YAML or YML files
           matches=$(grep -r -E 'options:(?:.*?--privileged\b)' $yaml_files 2>/dev/null)
-
 
           # Check the exit code of grep
           if [ -n "$matches" ]; then
