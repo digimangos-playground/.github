@@ -43,6 +43,7 @@ jobs:
 
           # Search for the pattern in YAML or YML files
           echo "PRE MATCHES"
+          echo "$yaml_files"
           grep -r -E 'options:(?:.*?--privileged\b)' $yaml_files
           matches=$(grep -r -E 'options:(?:.*?--privileged\b)' $yaml_files 2>/dev/null)
           echo "POST MATCHES"
