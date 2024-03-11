@@ -2,11 +2,6 @@ name: Check privileged option
 
 on:
   pull_request:
-    paths: '.github/workflows/*'
-    types:
-      - opened
-      - reopened
-      - resynchronized
 
 permissions:
   contents: read
