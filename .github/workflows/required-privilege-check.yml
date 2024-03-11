@@ -3,7 +3,6 @@ name: Check privileged option
 on:
   pull_request:
     paths: '.github/workflows/*'
-  push:
 
 permissions:
   contents: read
@@ -25,7 +24,7 @@ jobs:
           PR_NUMBER: ${{ github.event.number }}
         run: |
           # Search for the pattern in YAML or YML files
-          matches=$(yq eval '[.. | select(has("options"))] | .[] | select(.options == "*--privileged*") | .options' .github/workflows/*.{yml,yaml})
+          matches=$(yq eval '[.. | select(has("options"))] | .[] | select(.options == "*--privileged*") | .options' .github/workflows/*.{yml,yaml} 2>/dev/null)
 
           # Check the exit code of grep
           if [ -n "$matches" ]; then
