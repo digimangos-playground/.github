@@ -22,8 +22,13 @@ jobs:
           OWNER_REPO: ${{ github.repository }}
           PR_NUMBER: ${{ github.event.number }}
         run: |
+          DIRECTORY="./.github/workflows"
+          if [ ! -d "$DIRECTORY" ]; then
+            echo "$DIRECTORY does not exist."
+          fi
+          
           # Search for the pattern in YAML or YML files
-          matches=$(yq eval '[.. | select(has("options"))] | .[] | select(.options == "*--privileged*") | .options' .github/workflows/*.{yml,yaml} 2>/dev/null)
+          matches=$(find $DIRECTORY -type f \( -iname \*.yaml -o -iname \*.yml \) -exec yq eval '[.. | select(has("options"))] | .[] | select(.options == "*--privileged*") | .options' {} ';')
 
           # Check the exit code of grep
           if [ -n "$matches" ]; then
