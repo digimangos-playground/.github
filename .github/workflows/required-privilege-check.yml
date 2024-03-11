@@ -26,11 +26,9 @@ jobs:
         run: |
           # Search for the pattern in YAML or YML files
           matches=$(yq eval '[.. | select(has("options"))] | .[] | select(.options == "*--privileged*") | .options' .github/workflows/*.{yml,yaml})
-          echo $matches
+
           # Check the exit code of grep
           if [ -n "$matches" ]; then
-              # Pattern matched
-          
               # Create a comment to add to the pull request
               COMMENT="🛑 The pull request contains workflows files using `--privileged` option which is not permitted."
 
@@ -38,7 +36,7 @@ jobs:
               curl -X POST \
               -H "Authorization: token ${GH_TOKEN}" \
               -H "Content-Type: application/json" \
-              -d "{\"body\": \"$COMMENT\"}" \
+              -d "{\"body\": \"${COMMENT}\"}" \
               "https://api.github.com/repos/${OWNER_REPO}/issues/${PR_NUMBER}/comments"
               exit 1
           else
