@@ -25,6 +25,7 @@ jobs:
           DIRECTORY="./.github/workflows"
           if [ ! -d "$DIRECTORY" ]; then
             echo "$DIRECTORY does not exist."
+            echo 0
           fi
           
           # Search for the pattern in YAML or YML files
