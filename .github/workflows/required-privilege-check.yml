@@ -25,9 +25,8 @@ jobs:
           PR_NUMBER: ${{ github.event.number }}
         run: |
           # Search for the pattern in YAML or YML files
-          grep -V
-          grep -c -r -E 'options:(?:.*?--privileged\b)' .github/workflows/*.{yml,yaml}
-          matches=$(grep -r -E 'options:(?:.*?--privileged\b)' .github/workflows/*.{yml,yaml} 2>/dev/null || true)
+          yq --version
+          matches=$(grep -r -E 'options:(.*?--privileged\b)' .github/workflows/*.{yml,yaml} 2>/dev/null || true)
 
           # Check the exit code of grep
           if [ -n "$matches" ]; then
