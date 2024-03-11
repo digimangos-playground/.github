@@ -28,6 +28,7 @@ jobs:
           Echo "Exec grep"
           grep -c -r -E 'options:(?:.*?--privileged\b)' --include=*.{yml,yaml}
           matches=$(grep -r -E 'options:(?:.*?--privileged\b)' --include=*.{yml,yaml} 2>/dev/null)
+          echo "$matches"
 
           # Check the exit code of grep
           if [ -n "$matches" ]; then
@@ -42,6 +43,7 @@ jobs:
               -H "Content-Type: application/json" \
               -d "{\"body\": \"$COMMENT\"}" \
               "https://api.github.com/repos/${OWNER_REPO}/issues/${PR_NUMBER}/comments"
+              exit 1
           else
               # Pattern not matched
               echo "No matches found."
