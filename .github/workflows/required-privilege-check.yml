@@ -30,7 +30,7 @@ jobs:
           # Check the exit code of grep
           if [ -n "$matches" ]; then
               # Create a comment to add to the pull request
-              COMMENT="🛑 The pull request contains workflows files using `--privileged` option which is not permitted."
+              COMMENT="🛑 The pull request contains workflows files using \`--privileged\` option which is not permitted."
 
               # Post the comment to the pull request using the GitHub API
               curl -X POST \
